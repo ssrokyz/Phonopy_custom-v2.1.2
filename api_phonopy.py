@@ -1718,7 +1718,7 @@ class Phonopy(object):
         return self.plot_projected_dos(pdos_indices=pdos_indices,
                                        legend=legend)
 
-    def plot_projected_dos(self, pdos_indices=None, legend=None):
+    def plot_projected_dos(self, pdos_indices=None, legend=None, flip_xy=True):
         """Plot projected DOS
 
         Parameters
@@ -1747,7 +1747,9 @@ class Phonopy(object):
         self._pdos.plot(ax,
                         indices=pdos_indices,
                         legend=legend,
-                        draw_grid=False)
+                        draw_grid=False,
+                        flip_xy=flip_xy,
+                        )
 
         ax.set_ylim((0, None))
 

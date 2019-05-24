@@ -144,9 +144,9 @@ def plot_partial_dos(ax,
                 raise ValueError
             pdos_sum += partial_dos[i]
         if flip_xy:
-            plots.append(ax.plot(pdos_sum, frequency_points, linewidth=1))
+            plots.append(ax.plot(pdos_sum, frequency_points))#, linewidth=1))
         else:
-            plots.append(ax.plot(frequency_points, pdos_sum, linewidth=1))
+            plots.append(ax.plot(frequency_points, pdos_sum))#, linewidth=1))
 
     if legend is not None:
         ax.legend(legend)

@@ -1751,7 +1751,7 @@ class Phonopy(object):
                         flip_xy=flip_xy,
                         )
 
-        ax.set_ylim((0, None))
+        ax.set_ylim((None, None))
 
         return plt
 

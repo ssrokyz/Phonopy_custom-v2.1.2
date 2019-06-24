@@ -1718,7 +1718,7 @@ class Phonopy(object):
         return self.plot_projected_dos(pdos_indices=pdos_indices,
                                        legend=legend)
 
-    def plot_projected_dos(self, pdos_indices=None, legend=None, flip_xy=True):
+    def plot_projected_dos(self, pdos_indices=None, legend=None, total_dos_bool=True, flip_xy=True):
         """Plot projected DOS
 
         Parameters
@@ -1747,13 +1747,14 @@ class Phonopy(object):
         self._pdos.plot(ax,
                         indices=pdos_indices,
                         legend=legend,
+                        total_dos_bool=total_dos_bool,
                         draw_grid=False,
                         flip_xy=flip_xy,
                         )
 
         ax.set_ylim((None, None))
 
-        return plt
+        return plt, ax
 
     def write_partial_DOS(self, filename="partial_dos.dat"):
         warnings.warn("Phonopy.write_partial_DOS is deprecated. "

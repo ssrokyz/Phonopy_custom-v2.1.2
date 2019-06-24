@@ -111,6 +111,7 @@ def plot_total_dos(ax,
 def plot_partial_dos(ax,
                      frequency_points,
                      partial_dos,
+                     total_dos_bool=True,
                      indices=None,
                      legend=None,
                      xlabel=None,
@@ -123,17 +124,18 @@ def plot_partial_dos(ax,
     ax.yaxis.set_tick_params(which='both', direction='in')
 
     plots = []
-    num_pdos = len(partial_dos)
+    natoms = len(partial_dos)
 
     if indices is None:
-        indices = []
-        for i in range(num_pdos):
-            indices.append([i])
+        indices = list(np.arange(natoms))
 
+    if total_dos_bool:
+        total_dos = 0
+    pdos_ind = 0
     for set_for_sum in indices:
         pdos_sum = np.zeros_like(frequency_points)
         for i in set_for_sum:
-            if i > num_pdos - 1:
+            if i > natoms - 1:
                 print("Index number \'%d\' is specified," % (i + 1))
                 print("but it is not allowed to be larger than the number of "
                       "atoms.")
@@ -143,21 +145,63 @@ def plot_partial_dos(ax,
                       "positive." % (i + 1))
                 raise ValueError
             pdos_sum += partial_dos[i]
+        if total_dos_bool:
+            total_dos += pdos_sum
         if flip_xy:
-            plots.append(ax.plot(pdos_sum, frequency_points))#, linewidth=1))
+            if legend is not None:
+                plots.append(ax.plot(pdos_sum, frequency_points, label=legend[pdos_ind]))#, linewidth=1))
+            else:
+                plots.append(ax.plot(pdos_sum, frequency_points))#, linewidth=1))
         else:
-            plots.append(ax.plot(frequency_points, pdos_sum))#, linewidth=1))
+            if legend is not None:
+                plots.append(ax.plot(frequency_points, pdos_sum, label=legend[pdos_ind]))#, linewidth=1))
+            else:
+                plots.append(ax.plot(frequency_points, pdos_sum))#, linewidth=1))
+        pdos_ind += 1
+    if total_dos_bool:
+        if flip_xy:
+            plots.append(ax.fill_between(total_dos, frequency_points, color='k', alpha=0.3))
+        else:
+            plots.append(ax.fill_betweenx(total_dos, frequency_points, color='k', alpha=0.3))
 
     if legend is not None:
-        ax.legend(legend)
+        ax.legend()
 
     if xlabel:
         ax.set_xlabel(xlabel)
     if ylabel:
         ax.set_ylabel(ylabel)
 
+    ax.axvline(0, c='k', linewidth=0.5)
+    ax.axhline(0, c='k', linewidth=0.5)
     ax.grid(draw_grid)
 
+def get_pdos(
+    ax,
+    partial_dos,
+    indices=None,
+    ):
+    natoms = len(partial_dos)
+
+    if indices is None:
+        indices = list(np.arange(natoms))
+
+    pdos_list = []
+    for set_for_sum in indices:
+        pdos_sum = 0
+        for i in set_for_sum:
+            if i > natoms - 1:
+                print("Index number \'%d\' is specified," % (i + 1))
+                print("but it is not allowed to be larger than the number of "
+                      "atoms.")
+                raise ValueError
+            if i < 0:
+                print("Index number \'%d\' is specified, but it must be "
+                      "positive." % (i + 1))
+                raise ValueError
+            pdos_sum += partial_dos[i]
+        pdos_list.append(pdos_sum)
+    return pdos_list
 
 class NormalDistribution(object):
     def __init__(self, sigma):
@@ -196,7 +240,7 @@ def run_tetrahedron_method_dos(mesh,
     else:
         _coef = np.array(coef, dtype='double', order='C')
     arr_shape = frequencies.shape + (len(frequency_points), _coef.shape[1])
-    dos = np.zeros(arr_shape, dtype='double')
+    dos = np.zeros(arr_shape, dtype=np.float64)
 
     phonoc.tetrahedron_method_dos(dos,
                                   mesh,
@@ -273,7 +317,7 @@ class Dos(object):
             f_max = freq_max
 
         if freq_pitch is None:
-            f_delta = (f_max - f_min) / 200.0
+            f_delta = (f_max - f_min) / 400.0
         else:
             f_delta = freq_pitch
         self._frequency_points = np.arange(f_min,
@@ -449,10 +493,11 @@ class PartialDos(Dos):
         if self._tetrahedron_mesh is None:
             self._run_smearing_method()
         else:
-            if self._openmp_thm:
-                self._run_tetrahedron_method_dos()
-            else:
-                self._run_tetrahedron_method()
+            ## Disabled due to memory issue
+            # if self._openmp_thm:
+                # self._run_tetrahedron_method_dos()
+            # else:
+            self._run_tetrahedron_method()
 
     def get_partial_dos(self):
         """
@@ -465,6 +510,7 @@ class PartialDos(Dos):
              ax,
              indices=None,
              legend=None,
+             total_dos_bool=True,
              xlabel=None,
              ylabel=None,
              draw_grid=True,
@@ -485,6 +531,7 @@ class PartialDos(Dos):
         plot_partial_dos(ax,
                          self._frequency_points,
                          self._partial_dos,
+                         total_dos_bool,
                          indices=indices,
                          legend=legend,
                          xlabel=_xlabel,

@@ -317,7 +317,7 @@ class Dos(object):
             f_max = freq_max
 
         if freq_pitch is None:
-            f_delta = (f_max - f_min) / 400.0
+            f_delta = (f_max - f_min) / 200.0
         else:
             f_delta = freq_pitch
         self._frequency_points = np.arange(f_min,

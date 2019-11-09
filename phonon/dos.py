@@ -113,21 +113,24 @@ def plot_partial_dos(ax,
                      partial_dos,
                      total_dos_bool=True,
                      indices=None,
+                     pdos_colors=None,
                      legend=None,
                      xlabel=None,
                      ylabel=None,
                      draw_grid=True,
                      flip_xy=False):
-    ax.xaxis.set_ticks_position('both')
-    ax.yaxis.set_ticks_position('both')
-    ax.xaxis.set_tick_params(which='both', direction='in')
-    ax.yaxis.set_tick_params(which='both', direction='in')
+    ax.tick_params(axis="both",direction="in", labelsize='x-large')
 
     plots = []
     natoms = len(partial_dos)
 
     if indices is None:
         indices = list(np.arange(natoms))
+
+    if pdos_colors:
+        pdos_colors.reverse()
+    else:
+        pdos_colors = [None]*len(indices)
 
     if total_dos_bool:
         total_dos = 0
@@ -148,32 +151,27 @@ def plot_partial_dos(ax,
         if total_dos_bool:
             total_dos += pdos_sum
         if flip_xy:
-            if legend is not None:
-                plots.append(ax.plot(pdos_sum, frequency_points, label=legend[pdos_ind], linewidth=1))
-            else:
-                plots.append(ax.plot(pdos_sum, frequency_points, linewidth=1))
+            plots.append(ax.plot(pdos_sum, frequency_points, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop()))
         else:
-            if legend is not None:
-                plots.append(ax.plot(frequency_points, pdos_sum, label=legend[pdos_ind], linewidth=1))
-            else:
-                plots.append(ax.plot(frequency_points, pdos_sum, linewidth=1))
+            plots.append(ax.plot(frequency_points, pdos_sum, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop()))
         pdos_ind += 1
     if total_dos_bool:
         if flip_xy:
-            plots.append(ax.fill_between(total_dos, frequency_points, color='k', alpha=0.3))
+            plots.append(ax.fill_between(total_dos, frequency_points, color='k', alpha=0.15))
         else:
-            plots.append(ax.fill_betweenx(total_dos, frequency_points, color='k', alpha=0.3))
+            plots.append(ax.fill_betweenx(total_dos, frequency_points, color='k', alpha=0.15))
 
-    if legend is not None:
-        ax.legend()
+    ax.legend(fontsize='xx-large')
+    if np.sum(legend==None) == len(indices):
+        ax.legend().remove()
 
     if xlabel:
         ax.set_xlabel(xlabel)
     if ylabel:
         ax.set_ylabel(ylabel)
 
-    ax.axvline(0, c='k', linewidth=0.5)
-    ax.axhline(0, c='k', linewidth=0.5)
+    ax.axvline(0, c='k', linewidth=2.0, zorder=3)
+    ax.axhline(0, c='k', linewidth=2.0, alpha=0.3, zorder=3)
     ax.grid(draw_grid)
 
 def get_pdos(
@@ -509,6 +507,7 @@ class PartialDos(Dos):
     def plot(self,
              ax,
              indices=None,
+             pdos_colors=None,
              legend=None,
              total_dos_bool=True,
              xlabel=None,
@@ -533,6 +532,7 @@ class PartialDos(Dos):
                          self._partial_dos,
                          total_dos_bool,
                          indices=indices,
+                         pdos_colors=pdos_colors,
                          legend=legend,
                          xlabel=_xlabel,
                          ylabel=_ylabel,

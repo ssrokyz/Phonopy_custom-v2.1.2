@@ -1718,7 +1718,7 @@ class Phonopy(object):
         return self.plot_projected_dos(pdos_indices=pdos_indices,
                                        legend=legend)
 
-    def plot_projected_dos(self, pdos_indices=None, legend=None, total_dos_bool=True, flip_xy=True):
+    def plot_projected_dos(self, pdos_indices=None, pdos_colors=None, legend=None, total_dos_bool=True, flip_xy=True):
         """Plot projected DOS
 
         Parameters
@@ -1736,16 +1736,16 @@ class Phonopy(object):
 
         """
 
-        import matplotlib.pyplot as plt
+        from matplotlib import pyplot as plt
+        font = {'family':'Arial'}
+        plt.rc('font', **font)
 
         fig, ax = plt.subplots()
-        ax.xaxis.set_ticks_position('both')
-        ax.yaxis.set_ticks_position('both')
-        ax.xaxis.set_tick_params(which='both', direction='in')
-        ax.yaxis.set_tick_params(which='both', direction='in')
+        ax.tick_params(axis="both",direction="in", labelsize='x-large')
 
         self._pdos.plot(ax,
                         indices=pdos_indices,
+                        pdos_colors=pdos_colors,
                         legend=legend,
                         total_dos_bool=total_dos_bool,
                         draw_grid=False,

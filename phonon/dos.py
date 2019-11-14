@@ -151,12 +151,14 @@ def plot_partial_dos(ax,
         if total_dos_bool:
             total_dos += pdos_sum
         if flip_xy:
+            # plots.append(ax.plot(pdos_sum/frequency_points**2, frequency_points, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop())) # Boson peak
             plots.append(ax.plot(pdos_sum, frequency_points, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop()))
         else:
             plots.append(ax.plot(frequency_points, pdos_sum, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop()))
         pdos_ind += 1
     if total_dos_bool:
         if flip_xy:
+            # plots.append(ax.fill_between(total_dos/frequency_points**2, frequency_points, color='k', alpha=0.15)) # Boson peak
             plots.append(ax.fill_between(total_dos, frequency_points, color='k', alpha=0.15))
         else:
             plots.append(ax.fill_betweenx(total_dos, frequency_points, color='k', alpha=0.15))

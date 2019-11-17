@@ -132,9 +132,12 @@ def plot_partial_dos(ax,
     else:
         pdos_colors = [None]*len(indices)
 
-    if total_dos_bool:
-        total_dos = 0
+    # if total_dos_bool:
+        # total_dos = 0
     pdos_ind = 0
+
+    if total_dos_bool:
+        plots.append(ax.plot(np.sum(partial_dos, axis=0), frequency_points, c='k'))
     for set_for_sum in indices:
         pdos_sum = np.zeros_like(frequency_points)
         for i in set_for_sum:
@@ -148,20 +151,22 @@ def plot_partial_dos(ax,
                       "positive." % (i + 1))
                 raise ValueError
             pdos_sum += partial_dos[i]
-        if total_dos_bool:
-            total_dos += pdos_sum
+        # if total_dos_bool:
+            # total_dos += pdos_sum
         if flip_xy:
             # plots.append(ax.plot(pdos_sum/frequency_points**2, frequency_points, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop())) # Boson peak
-            plots.append(ax.plot(pdos_sum, frequency_points, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop()))
+            plots.append(ax.plot(pdos_sum, frequency_points, label=legend[pdos_ind], linewidth=2, c=pdos_colors.pop()))
         else:
-            plots.append(ax.plot(frequency_points, pdos_sum, label=legend[pdos_ind], linewidth=1, c=pdos_colors.pop()))
+            plots.append(ax.plot(frequency_points, pdos_sum, label=legend[pdos_ind], linewidth=2, c=pdos_colors.pop()))
         pdos_ind += 1
-    if total_dos_bool:
-        if flip_xy:
-            # plots.append(ax.fill_between(total_dos/frequency_points**2, frequency_points, color='k', alpha=0.15)) # Boson peak
-            plots.append(ax.fill_between(total_dos, frequency_points, color='k', alpha=0.15))
-        else:
-            plots.append(ax.fill_betweenx(total_dos, frequency_points, color='k', alpha=0.15))
+    # if total_dos_bool:
+        # if flip_xy:
+            # # plots.append(ax.fill_between(total_dos/frequency_points**2, frequency_points, color='k', alpha=0.15)) # Boson peak
+            # # plots.append(ax.fill_between(total_dos, frequency_points, facecolor='0.8', edgecolor='k'))
+            # plots.append(ax.plot(total_dos, frequency_points, c='k'))
+        # else:
+            # # plots.append(ax.fill_betweenx(total_dos, frequency_points, facecolor='0.8', edgecolor='k'))
+            # plots.append(ax.plot(frequency_points, total_dos, c='k'))
 
     ax.legend(fontsize='xx-large')
     if np.sum(legend==None) == len(indices):

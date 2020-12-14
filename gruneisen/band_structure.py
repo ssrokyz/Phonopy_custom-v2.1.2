@@ -172,11 +172,17 @@ class GruneisenBandStructure(GruneisenBase):
             self._plot_a_band(ax1, curve, distances_with_shift, i, n,
                               color_scheme)
         ax1.set_xlim(0, distances_with_shift[-1])
+        ax1.grid(alpha=0.5)
+        ax1.tick_params(axis="both",direction="in", labelsize='x-large')
+        ax1.set_ylabel('Gruneisen', fontsize='x-large')
 
         for i, freqs in enumerate(frequencies.T):
             self._plot_a_band(ax2, freqs, distances_with_shift, i, n,
                               color_scheme)
         ax2.set_xlim(0, distances_with_shift[-1])
+        ax2.grid(alpha=0.5)
+        ax2.tick_params(axis="both",direction="in", labelsize='x-large')
+        ax2.set_ylabel('Frequency (THz)', fontsize='x-large')
 
     def _plot_a_band(self, ax, curve, distances_with_shift, i, n, color_scheme):
         color = None

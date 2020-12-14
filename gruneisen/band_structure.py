@@ -44,7 +44,8 @@ class GruneisenBandStructure(GruneisenBase):
                  dynmat_plus,
                  dynmat_minus,
                  delta_strain=None,
-                 factor=VaspToTHz):
+                 factor=VaspToTHz,
+                 ):
         GruneisenBase.__init__(self,
                                dynmat,
                                dynmat_plus,
@@ -79,6 +80,12 @@ class GruneisenBandStructure(GruneisenBase):
                                 distances_with_shift])
 
             distance_shift = distances_with_shift[-1]
+
+        #
+        self._special_points = []
+        for i in range(len(self.get_distances())):
+            self._special_points.append(self.get_distances()[i][0])
+        self._special_points.append(self.get_distances()[-1][-1])
 
     def get_qpoints(self):
         return [path[0] for path in self._paths]
@@ -128,11 +135,13 @@ class GruneisenBandStructure(GruneisenBase):
     def plot(self,
              axarr,
              epsilon=None,
-             color_scheme=None):
+             color_scheme=None,
+             labels=None,
+             ):
         for band_structure in self._paths:
-            self._plot(axarr, band_structure, epsilon, color_scheme)
+            self._plot(axarr, band_structure, epsilon, color_scheme, labels)
 
-    def _plot(self, axarr, band_structure, epsilon, color_scheme):
+    def _plot(self, axarr, band_structure, epsilon, color_scheme, labels):
         (qpoints,
          distances,
          gamma,
@@ -172,6 +181,8 @@ class GruneisenBandStructure(GruneisenBase):
             self._plot_a_band(ax1, curve, distances_with_shift, i, n,
                               color_scheme)
         ax1.set_xlim(0, distances_with_shift[-1])
+        ax1.set_xticks(self._special_points)
+        ax1.set_xticklabels(labels)
         ax1.grid(alpha=0.5)
         ax1.tick_params(axis="both",direction="in", labelsize='x-large')
         ax1.set_ylabel('Gruneisen', fontsize='x-large')
@@ -180,6 +191,8 @@ class GruneisenBandStructure(GruneisenBase):
             self._plot_a_band(ax2, freqs, distances_with_shift, i, n,
                               color_scheme)
         ax2.set_xlim(0, distances_with_shift[-1])
+        ax2.set_xticks(self._special_points)
+        ax2.set_xticklabels(labels)
         ax2.grid(alpha=0.5)
         ax2.tick_params(axis="both",direction="in", labelsize='x-large')
         ax2.set_ylabel('Frequency (THz)', fontsize='x-large')

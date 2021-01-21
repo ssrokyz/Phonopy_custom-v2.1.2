@@ -62,7 +62,7 @@ class GruneisenBandStructure(GruneisenBase):
             distances = np.zeros(len(qpoints))
             delta_qpoints = qpoints[1:] - qpoints[:-1]
             delta_distances = np.sqrt(
-                (np.dot(delta_qpoints, rec_lattice) ** 2).sum(axis=1))
+                (np.dot(delta_qpoints, rec_lattice.T) ** 2).sum(axis=1))
             for i, dd in enumerate(delta_distances):
                 distances[i + 1] = distances[i] + dd
 

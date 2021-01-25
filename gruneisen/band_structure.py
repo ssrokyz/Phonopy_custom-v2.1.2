@@ -61,9 +61,8 @@ class GruneisenBandStructure(GruneisenBase):
             qpoints = np.array(qpoints_)
             distances = np.zeros(len(qpoints))
             delta_qpoints = qpoints[1:] - qpoints[:-1]
-            delta_distances = np.sqrt(
-                (np.dot(delta_qpoints, rec_lattice.T) ** 2).sum(axis=1))
-            for i, dd in enumerate(delta_distances):
+            for i, dq in enumerate(delta_qpoints):
+                dd = np.linalg.norm(np.dot(rec_lattice, dq))
                 distances[i + 1] = distances[i] + dd
 
             self.set_qpoints(qpoints)
